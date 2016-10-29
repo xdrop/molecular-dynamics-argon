@@ -21,10 +21,13 @@
 #include <fstream>
 #include <sstream>
 #include <cmath>
+#include <iostream>
 
 
-const int N = 20;
-double pos[N][3];
+const int N = 2;
+double pos[N][6];
+
+bool lastPotential = false;
 
 
 double v[N][3];
@@ -35,17 +38,14 @@ const double s = a;
 double boundedIncrease(double a, double b);
 
 void setUp() {
-  pos[0][0] = 0.4;
+  pos[0][0] = 0.499985;
   pos[0][1] = 0.0;
   pos[0][2] = 0.0;
 
-  pos[1][0] = 2.0;
+  pos[1][0] = 0.500015;
   pos[1][1] = 0.0;
   pos[1][2] = 0.0;
 
-  pos[2][0] = 3.0;
-  pos[2][1] = 0.0;
-  pos[2][2] = 0.0;
 
   v[0][0] = 0.0;
   v[0][1] = 0.0;
@@ -55,9 +55,6 @@ void setUp() {
   v[1][1] = 0.0;
   v[1][2] = 0.0;
 
-  v[2][0] = 0.0;
-  v[2][1] = 1.0;
-  v[2][2] = 0.0;
 
 }
 
@@ -91,7 +88,7 @@ void printCSVFile(int counter) {
   filename << "result-" << counter <<  ".csv";
   std::ofstream out( filename.str().c_str() );
 
-  out << "x, y, z" << std::endl;
+  out << "x, y, z, force, dist, leo" << std::endl;
 
   for (int i=0; i<N; i++) {
     out << pos[i][0]
@@ -99,30 +96,43 @@ void printCSVFile(int counter) {
         << pos[i][1]
         << ","
         << pos[i][2]
+        << ","
+        << pos[i][3]
+        << ","
+        << pos[i][4]
+        << ","
+        << pos[i][5]
         << std::endl;
   }
 }
 
 double force_potential(double r){
 
-  return 4*a * (12 * (std::pow(s,12) / std::pow(r,13)) - 6 * (std::pow(s, 6)/std::pow(r, 7)));
+  return 4 * a * ((12 * (std::pow(s, 12) / std::pow(r, 13))) - (6 * (std::pow(s, 6) / std::pow(r, 7))));
 
 }
 
 
 
 void updateBody() {
-  double force[3];
-  force[0] = 0.0;
-  force[1] = 0.0;
-  force[2] = 0.0;
 
-  for(int i = 0; i < N -1; i++) {
-    for (int j = i + 1; j < N; j++) {
+  double dist;
+  double potential;
+
+  for(int i = 0; i < N; i++) {
+    double force[3];
+    force[0] = 0.0;
+    force[1] = 0.0;
+    force[2] = 0.0;
+    for (int j = 0; j < N; j++) {
+
+      if(i == j) continue;
 
       double dx = pos[i][0] - pos[j][0];
       double dy = pos[i][1] - pos[j][1];
       double dz = pos[i][2] - pos[j][2];
+
+      dist = dx;
 
       const double distance = sqrt(
           dx * dx +
@@ -130,20 +140,45 @@ void updateBody() {
           dz * dz
       );
 
+      potential = force_potential(distance);
+
+      if(potential < 0) {
+        if (lastPotential) {
+          std::cout << "Flip to negative" << std::endl;
+        }
+        lastPotential = false;
+      }
+      else{
+        if(!lastPotential) {
+          std::cout << "Flip to positive" << std::endl;
+        }
+        lastPotential = true;
+
+      }
       force[0] += dx * force_potential(distance);
       force[1] += dy * force_potential(distance);
       force[2] += dz * force_potential(distance);
 
+
     }
+
+
     const double timeStepSize = 0.0001;
 
-    pos[i][0] = boundedIncrease(pos[i][0], timeStepSize * v[2][0]);
-    pos[i][1] = boundedIncrease(pos[i][1], timeStepSize * v[2][1]);
-    pos[i][2] = boundedIncrease(pos[i][2], timeStepSize * v[2][2]);
+    pos[i][0] = boundedIncrease(pos[i][0], timeStepSize * v[i][0]);
+    pos[i][1] = boundedIncrease(pos[i][1], timeStepSize * v[i][1]);
+    pos[i][2] = boundedIncrease(pos[i][2], timeStepSize * v[i][2]);
 
-    v[i][0] = v[i][0] + timeStepSize * force[0];
-    v[i][1] = v[i][1] + timeStepSize * force[1];
-    v[i][2] = v[i][2] + timeStepSize * force[2];
+//    pos[i][0] += timeStepSize * v[i][0];
+//    pos[i][1] += timeStepSize * v[i][1];
+//    pos[i][2] += timeStepSize * v[i][2];
+    pos[i][3] = force[0];
+    pos[i][4] = dist;
+    pos[i][5] = potential;
+
+    v[i][0] += timeStepSize * force[0];
+    v[i][1] += timeStepSize * force[1];
+    v[i][2] += timeStepSize * force[2];
   }
 
 }
@@ -170,11 +205,12 @@ double boundedIncrease(double cur, double change){
 
 int main() {
 
-  randSetup();
+//  randSetup();
+  setUp();
   printCSVFile(0);
 
-  const int timeSteps        = 20000;
-  const int plotEveryKthStep = 100;
+  const int timeSteps        = 20000000;
+  const int plotEveryKthStep = 10000;
   for (int i=0; i<timeSteps; i++) {
     updateBody();
     if (i%plotEveryKthStep==0) {
