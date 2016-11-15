@@ -24,7 +24,7 @@
 
 /* Begin PBXFileReference section */
 		C4591CFC1DCBB52700947137 /* argonsim */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = argonsim; sourceTree = BUILT_PRODUCTS_DIR; };
-		C4591CFF1DCBB52700947137 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		C4591CFF1DCBB52700947137 /* main.cpp */ = {isa = PBXFileReference; indentWidth = 2; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; tabWidth = 2; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
