@@ -25,7 +25,7 @@
 #include <cassert>
 #include <vector>
 
-const int N = 100;
+const int N = 1000;
 double pos[N][7];
 
 #define MOD(a, b) ((((a)%(b))+(b))%(b))
@@ -40,9 +40,9 @@ const double cutoff = 10 * s;
 const double rSqrd = cutoff * cutoff;
 
 
-const double skinDiameter = cutoff + 0.5 * cutoff;
+const double skinDiameter = cutoff + 0.1 * cutoff;
 const double cellSize = skinDiameter;
-const int M = 7;
+const int M = 10;
 
 double maximumDisplacementPerParticle[N][3];
 double maximumDistanceDisplaced[2];
@@ -55,19 +55,14 @@ int next[N];
 
 const double timeStepSize = 0.0001;
 
-inline double getDelta(int i, int j, int dim) {
+inline double periodicBoundaryDelta(int i, int j, int dim) {
 
-  double dt = pos[i][dim] - pos[j][dim];
-  double absolute = fabs(dt);
+  double dt = pos[j][dim] - pos[i][dim];
 
-  if (1 - absolute < absolute) {
-    if (dt < 0)
-      dt = 1 - absolute;
-    else
-      dt = -(1 - absolute);
-  }
+  if (dt  >  0.5) dt = dt - 1.0;
+  if (dt <= -0.5) dt = dt + 1.0;
 
-  return dt;
+  return -dt;
 
 }
 
@@ -93,25 +88,30 @@ float rand_FloatRange(float a, float b) {
 }
 
 void setUp() {
-  pos[0][0] = 0.44;
+  pos[0][0] = 0.98;
   pos[0][1] = 0.5;
   pos[0][2] = 0.5;
 
-  pos[1][0] = 0.56;
+  pos[1][0] = 0.02;
   pos[1][1] = 0.5;
   pos[1][2] = 0.5;
 
-//  pos[2][0] = 0.5;
-//  pos[2][1] = 0.53;
-//  pos[2][2] = 0.5;
-//
-//  pos[3][0] = 0.5;
-//  pos[3][1] = 0.46;
-//  pos[3][2] = 0.5;
-//
-//  pos[4][0] = 0.0;
-//  pos[4][1] = 0.0;
-//  pos[4][2] = 0.0;
+  pos[2][0] = 0.5;
+  pos[2][1] = 0.98;
+  pos[2][2] = 0.5;
+
+  pos[3][0] = 0.5;
+  pos[3][1] = 0.02;
+  pos[3][2] = 0.5;
+
+  pos[4][0] = 0.02;
+  pos[4][1] = 0.02;
+  pos[4][2] = 0.5;
+
+
+  pos[5][0] = 0.98;
+  pos[5][1] = 0.98;
+  pos[5][2] = 0.5;
 
 
 
@@ -231,8 +231,6 @@ void writeNeighbourCells() {
 
 void updateBody() {
 
-  double distA = 0;
-
   for (int i = 0; i < N; i++) {
     double force[3];
 
@@ -243,10 +241,10 @@ void updateBody() {
     // for every neighbour j in the vertlet list
     for (auto &j : vertletList[i]) {
 
-      // calculate difference in x,y,z
-      double dx = getDelta(i, j, 0);
-      double dy = getDelta(i, j, 1);
-      double dz = getDelta(i, j, 2);
+      // calculate difference (with periodic boundary) in x,y,z
+      double dx = periodicBoundaryDelta(i, j, 0);
+      double dy = periodicBoundaryDelta(i, j, 1);
+      double dz = periodicBoundaryDelta(i, j, 2);
 
       // calculate the distance squared
       double dSqrd = dx * dx + dy * dy + dz * dz;
@@ -256,8 +254,6 @@ void updateBody() {
 
         const double distance = sqrt(dSqrd);
 
-        distA = distance;
-
         double potential = force_potential(distance);
 
         force[0] += dx * potential;
@@ -266,29 +262,36 @@ void updateBody() {
       }
     }
 
-    // perform the actual movement of the particles while taking into
-    // account the wrap around force
+    // perform the actual movement of the particles while taking into account the
+    // wrap around force
     double displacement[3];
     displacement[0] = timeStepSize * v[i][0];
     displacement[1] = timeStepSize * v[i][1];
     displacement[2] = timeStepSize * v[i][2];
 
+    // we keep track of the maximum displacement in each axis for use in computing
+    // the total displacement distance below
     maximumDisplacementPerParticle[i][0] += displacement[0];
     maximumDisplacementPerParticle[i][1] += displacement[1];
     maximumDisplacementPerParticle[i][2] += displacement[2];
 
-    // we keep track of the two maximum displacement's between
-    // particles and update them accordingly
-    double absDist = maximumDisplacementPerParticle[i][0] * maximumDisplacementPerParticle[i][0] +
+    // we calculate how far this particle travelled (before the vertlet lists were
+    // updated again) so far
+    double currentDisplacement = maximumDisplacementPerParticle[i][0] * maximumDisplacementPerParticle[i][0] +
                      maximumDisplacementPerParticle[i][1] * maximumDisplacementPerParticle[i][1] +
                      maximumDisplacementPerParticle[i][2] * maximumDisplacementPerParticle[i][2];
 
-    if (absDist > maximumDistanceDisplaced[0]) {
+
+    // we also update the two maximum displacements over all iterations. Note that
+    // these are reset whenever the vertlet list is updated and when these
+    // exceed a certain threshold the vertlet lists need to be
+    // calculated again.
+    if (currentDisplacement > maximumDistanceDisplaced[0]) {
       maximumDistanceDisplaced[1] = maximumDistanceDisplaced[0];
-      maximumDistanceDisplaced[0] = absDist;
+      maximumDistanceDisplaced[0] = currentDisplacement;
     } else {
-      if (absDist > maximumDistanceDisplaced[1]) {
-        maximumDistanceDisplaced[1] = absDist;
+      if (currentDisplacement > maximumDistanceDisplaced[1]) {
+        maximumDistanceDisplaced[1] = currentDisplacement;
       }
     }
 
@@ -300,8 +303,7 @@ void updateBody() {
 
 
     pos[i][3] = force[0];
-    pos[i][4] = distA;
-    pos[i][6] = v[i][0];
+    pos[i][6] = fabs(v[i][0]) + fabs(v[i][1]) + fabs(v[i][2]);
 
 
     v[i][0] += timeStepSize * force[0];
@@ -394,8 +396,8 @@ int main() {
 
   srand(time(NULL));
 
-//randSetup();
-  setUp();
+randSetup();
+//  setUp();
   printCSVFile(0);
   createVertletLists();
   writeNeighbourCells();
