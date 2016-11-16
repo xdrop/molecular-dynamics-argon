@@ -12,9 +12,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8bb10eb3-5844-4951-927e-138188feae80" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/delete/default" afterPath="$PROJECT_DIR$/delete/default" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/simple_msim.cpp" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/default.cpp" afterPath="$PROJECT_DIR$/advanced_msim.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/argon-simulation.iml" afterPath="$PROJECT_DIR$/.idea/argon-simulation.iml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/default.cpp" afterPath="$PROJECT_DIR$/default.cpp" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/CMakeLists.txt" afterPath="$PROJECT_DIR$/CMakeLists.txt" />
     </list>
     <ignored path="argon-simulation.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,11 +36,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="default.cpp" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/default.cpp">
+      <file leaf-file-name="advanced_msim.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="314" column="50" selection-start-line="314" selection-start-column="50" selection-end-line="314" selection-end-column="50" />
+            <state relative-caret-position="240">
+              <caret line="53" column="35" selection-start-line="0" selection-start-column="0" selection-end-line="451" selection-end-column="0" />
               <folding>
                 <element signature="e#114#132#0" expanded="true" />
                 <element signature="e#799#986#0" expanded="false" />
@@ -54,8 +56,31 @@
                 <element signature="e#3484#4092#0" expanded="false" />
                 <element signature="e#4094#6946#0" expanded="false" />
                 <element signature="e#6948#7107#0" expanded="false" />
+                <element signature="e#7109#8751#0" expanded="false" />
                 <element signature="e#8753#8881#0" expanded="false" />
                 <element signature="e#8883#10594#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="simple_msim.cpp" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/simple_msim.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="15">
+              <caret line="1" column="37" selection-start-line="1" selection-start-column="37" selection-end-line="1" selection-end-column="37" />
+              <folding>
+                <element signature="e#73#91#0" expanded="true" />
+                <element signature="e#1764#2273#0" expanded="false" />
+                <element signature="e#2275#2385#0" expanded="false" />
+                <element signature="e#2387#3822#0" expanded="false" />
+                <marker date="1479312656000" expanded="false" signature="416:542" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="652:762" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="823:928" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="970:1027" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="1042:1508" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="1528:1567" ph="{...}" />
+                <marker date="1479312656000" expanded="false" signature="1586:1762" ph="{...}" />
               </folding>
             </state>
           </provider>
@@ -67,7 +92,7 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/default.cpp" root0="SKIP_INSPECTION" />
+    <setting file="file://$PROJECT_DIR$/advanced_msim.cpp" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -76,6 +101,7 @@
         <option value="$PROJECT_DIR$/argon.cpp" />
         <option value="$PROJECT_DIR$/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/default.cpp" />
+        <option value="$PROJECT_DIR$/simple_msim.cpp" />
       </list>
     </option>
   </component>
@@ -100,7 +126,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectView">
-    <navigator proportions="" version="1">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -113,7 +139,28 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes />
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="argon-simulation" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="argon-simulation" />
+              <option name="myItemType" value="com.jetbrains.cidr.projectView.CidrFilesViewHelper$MyProjectTreeStructure$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="argon-simulation" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -337,7 +384,7 @@
       <workItem from="1479146217953" duration="3004000" />
       <workItem from="1479212860494" duration="3434000" />
       <workItem from="1479235789132" duration="1913000" />
-      <workItem from="1479308143958" duration="358000" />
+      <workItem from="1479308143958" duration="988000" />
     </task>
     <task id="LOCAL-00001" summary="Debug code&#10;">
       <created>1478113228339</created>
@@ -350,13 +397,13 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="103638000" />
+    <option name="totallyTimeSpent" value="104268000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4850107" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.14791666" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3282532" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
@@ -396,7 +443,7 @@
       <breakpoints-dialog>
         <breakpoints-dialog />
       </breakpoints-dialog>
-      <option name="time" value="132" />
+      <option name="time" value="134" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="CMakeRunConfiguration">
@@ -406,7 +453,7 @@
     </watches-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -425,13 +472,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -450,13 +498,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -475,13 +524,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -500,13 +550,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -525,13 +576,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -550,13 +602,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -575,13 +628,14 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -600,6 +654,7 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
@@ -620,7 +675,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -639,6 +694,7 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
@@ -659,7 +715,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -678,6 +734,7 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
           </folding>
@@ -888,10 +945,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/default.cpp">
+    <entry file="file://$PROJECT_DIR$/advanced_msim.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="314" column="50" selection-start-line="314" selection-start-column="50" selection-end-line="314" selection-end-column="50" />
+        <state relative-caret-position="240">
+          <caret line="53" column="35" selection-start-line="0" selection-start-column="0" selection-end-line="451" selection-end-column="0" />
           <folding>
             <element signature="e#114#132#0" expanded="true" />
             <element signature="e#799#986#0" expanded="false" />
@@ -907,8 +964,29 @@
             <element signature="e#3484#4092#0" expanded="false" />
             <element signature="e#4094#6946#0" expanded="false" />
             <element signature="e#6948#7107#0" expanded="false" />
+            <element signature="e#7109#8751#0" expanded="false" />
             <element signature="e#8753#8881#0" expanded="false" />
             <element signature="e#8883#10594#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/simple_msim.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="15">
+          <caret line="1" column="37" selection-start-line="1" selection-start-column="37" selection-end-line="1" selection-end-column="37" />
+          <folding>
+            <element signature="e#73#91#0" expanded="true" />
+            <element signature="e#1764#2273#0" expanded="false" />
+            <element signature="e#2275#2385#0" expanded="false" />
+            <element signature="e#2387#3822#0" expanded="false" />
+            <marker date="1479312656000" expanded="false" signature="416:542" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="652:762" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="823:928" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="970:1027" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="1042:1508" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="1528:1567" ph="{...}" />
+            <marker date="1479312656000" expanded="false" signature="1586:1762" ph="{...}" />
           </folding>
         </state>
       </provider>
