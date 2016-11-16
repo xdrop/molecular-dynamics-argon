@@ -1,22 +1,6 @@
-// Translate this file with
-//
-// g++ -O3 spaceboddies.c -o spaceboddies
-//
-// Run it with
-//
-// ./spaceboddies
-//
-// Open Paraview (www.paraview.org) and do the following:
-// - Select File/open and select all the results files. Press the Apply button.
-// - Click into the left visualisation window (usually titled Layout #1).
-// - Click the result-* item in the window Pipeline Browser. Ensure that your Layout #1 and the item result-* is marked.
-// - Select Filters/Alphabetical/TableToPoints. Press Apply button.
-// - Switch the representation (on top) from Surface into Points.
-// - Press the play button and adopt colours and point sizes.
-// - For some Paraview versions, you have to mark your TableToPoints item (usually called TableToPoints1) and explicitly select that X Column is x, Y Column is y, and Z Column is z.
-// - What is pretty cool is the Filter TemporalParticlesToPathlines. If you set Mask Points to 1, you see a part of the trajactory.
-//
-// (C) 2015 Tobias Weinzierl
+// Compile with pthreads or windows equivalent!
+// The C++ standard used is C++11
+// g++ -O4 -std=c++11 -pthread
 
 #include <fstream>
 #include <sstream>
@@ -24,8 +8,9 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <thread>
 
-const int N = 1000;
+const int N = 2;
 double pos[N][7];
 
 #define MOD(a, b) ((((a)%(b))+(b))%(b))
@@ -229,9 +214,9 @@ void writeNeighbourCells() {
   }
 }
 
-void updateBody() {
+void updateBody(int begin, int end) {
 
-  for (int i = 0; i < N; i++) {
+  for (int i = begin; i < end; i++) {
     double force[3];
 
     force[0] = 0.0;
@@ -323,7 +308,7 @@ void createVertletLists() {
   }
 }
 
-void updateNeighbourList() {
+void updateVertletLists() {
 
   for (int i = 0; i < N; i++) {
 
@@ -402,7 +387,7 @@ randSetup();
   createVertletLists();
   writeNeighbourCells();
   cell_update();
-  updateNeighbourList();
+  updateVertletLists();
 
   for (int i = 0; i < N; i++) {
     maximumDisplacementPerParticle[i][0] = 0.0;
@@ -414,10 +399,19 @@ randSetup();
 
   const int timeSteps = 20000000;
   const int plotEveryKthStep = 10000;
+
+
+  // create a few threads to parallelize the simulation
+  std::vector<std::thread> threads(10);
+  // the "piece" of work that each thread should do
+  int grainSize = N/10;
+
+
+
   for (int i = 0; i < timeSteps; i++) {
     if (shouldUpdateNeighbourList()) {
       cell_update();
-      updateNeighbourList();
+      updateVertletLists();
       for (int i = 0; i < N; i++) {
         maximumDisplacementPerParticle[i][0] = 0.0;
         maximumDisplacementPerParticle[i][1] = 0.0;
@@ -427,7 +421,18 @@ randSetup();
       vertletSaved++;
     }
 
-    updateBody();
+    int iteration = 0;
+
+    for(auto it = std::begin(threads); it != std::end(threads) - 1; ++it){
+      *it = std::thread(updateBody, iteration, iteration + grainSize);
+      iteration += grainSize;
+    }
+    threads.back() = std::thread(updateBody, iteration, N);
+
+    for(auto&& i: threads){
+      i.join();
+    }
+
     if (i % plotEveryKthStep == 0) {
       int i1 = i / plotEveryKthStep + 1;
       std::cout << "Round " << i1 << std::endl;
