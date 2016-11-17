@@ -51,21 +51,10 @@ inline double periodicBoundaryDelta(int i, int j, int dim) {
 
 }
 
-inline const double calcDistance(double dx, double dy, double dz);
-
 inline double force_potential(double r) {
 
   return 4 * a * ((12 * (std::pow(s, 12) / std::pow(r, 13))) - (6 * (std::pow(s, 6) / std::pow(r, 7))));
 
-}
-
-const double calcDistance(double dx, double dy, double dz) {
-  const double distance = sqrt(
-      dx * dx +
-      dy * dy +
-      dz * dz
-  );
-  return distance;
 }
 
 float rand_FloatRange(float a, float b) {

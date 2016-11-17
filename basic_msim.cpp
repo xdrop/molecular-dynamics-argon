@@ -16,11 +16,11 @@ double pos[N][7];
 
 double v[N][3];
 
-const double a = 0.01;
+const double a = 0.00001;
 
 const double s = a;
 
-const double timeStepSize = 0.0001;
+double timeStepSize;
 
 inline double periodicBoundaryDelta(int i, int j, int dim) {
 
@@ -55,37 +55,37 @@ float rand_FloatRange(float a, float b) {
 }
 
 void setUp() {
-  pos[0][0] = 0.98;
+  pos[0][0] = 0.4;
   pos[0][1] = 0.5;
   pos[0][2] = 0.5;
 
-  pos[1][0] = 0.02;
+  pos[1][0] = 0.6;
   pos[1][1] = 0.5;
   pos[1][2] = 0.5;
 
-  pos[2][0] = 0.5;
-  pos[2][1] = 0.98;
-  pos[2][2] = 0.5;
+//  pos[2][0] = 0.5;
+//  pos[2][1] = 0.98;
+//  pos[2][2] = 0.5;
+//
+//  pos[3][0] = 0.5;
+//  pos[3][1] = 0.02;
+//  pos[3][2] = 0.5;
+//
+//  pos[4][0] = 0.02;
+//  pos[4][1] = 0.02;
+//  pos[4][2] = 0.5;
+//
+//
+//  pos[5][0] = 0.98;
+//  pos[5][1] = 0.98;
+//  pos[5][2] = 0.5;
 
-  pos[3][0] = 0.5;
-  pos[3][1] = 0.02;
-  pos[3][2] = 0.5;
 
-  pos[4][0] = 0.02;
-  pos[4][1] = 0.02;
-  pos[4][2] = 0.5;
-
-
-  pos[5][0] = 0.98;
-  pos[5][1] = 0.98;
-  pos[5][2] = 0.5;
-
-
-  v[0][0] = 0.0;
+  v[0][0] = 0.0000005;
   v[0][1] = 0.0;
   v[0][2] = 0.0;
 
-  v[1][0] = 0.0;
+  v[1][0] = -0.0000005;
   v[1][1] = 0.0;
   v[1][2] = 0.0;
 
@@ -136,10 +136,15 @@ void printCSVFile(int counter) {
 
 double wrap(double pos) {
   double wrapped = fmod(pos, 1.0);
-  return wrapped > 0.0 ? wrapped : wrapped + 1;
+  double d = wrapped > 0.0 ? wrapped : wrapped + 1;
+  if(!(d < 1.0))
+    std::cout << "break";
+  return d;
 }
 
 void updateBody(int begin, int end) {
+
+  double minDistance = 100.0;
 
   for (int i = begin; i < end; i++) {
     double force[3];
@@ -151,15 +156,19 @@ void updateBody(int begin, int end) {
     // for every neighbour j in the vertlet list
     for (int j = 0; j < N; j++) {
 
+      if(i==j) continue;
+
       // calculate difference (with periodic boundary) in x,y,z
       double dx = periodicBoundaryDelta(i, j, 0);
       double dy = periodicBoundaryDelta(i, j, 1);
       double dz = periodicBoundaryDelta(i, j, 2);
 
-      // calculate the distance squared
-      double dSqrd = dx * dx + dy * dy + dz * dz;
+      const double distance = sqrt(dx * dx + dy * dy + dz * dz);
 
-      const double distance = sqrt(dSqrd);
+      if (distance < minDistance)
+        minDistance = distance;
+
+      pos[i][4] = distance;
 
       double potential = force_potential(distance);
 
@@ -168,10 +177,20 @@ void updateBody(int begin, int end) {
       force[2] += dz * potential;
     }
 
+    if (minDistance < 0.0002) {
+      timeStepSize = (1E6 * (minDistance/0.0002)) * 0.0000001;
+    }
+    else {
+      timeStepSize = 1.0E2;
+    }
+
     double displacement[3];
     displacement[0] = timeStepSize * v[i][0];
     displacement[1] = timeStepSize * v[i][1];
     displacement[2] = timeStepSize * v[i][2];
+
+    assert(pos[i][0] > 0.0);
+    assert(pos[i][0] < 1.0);
 
     // perform the actual movement of the particles while taking into account the
     // wrap around force
@@ -180,6 +199,7 @@ void updateBody(int begin, int end) {
     pos[i][2] = wrap(pos[i][2] + displacement[2]);
 
     assert(pos[i][0] > 0.0);
+    assert(pos[i][0] < 1.0);
 
 
     pos[i][3] = force[0];
@@ -200,32 +220,35 @@ int main() {
 
   srand(time(NULL));
 
-  randSetup();
-//  setUp();
+//  randSetup();
+  setUp();
   printCSVFile(0);
 
-  const int timeSteps = 20000000;
-  const int plotEveryKthStep = 10000;
+  const int timeSteps = 16000;
+  const int plotEveryKthStep = 8;
 
 
   // create a few threads to parallelize the simulation
-  std::vector<std::thread> threads(10);
+  int noOfThreads = 2;
+  std::vector<std::thread> threads(noOfThreads);
   // the "piece" of work that each thread should do
-  int grainSize = N / 10;
+  int grainSize = N / noOfThreads;
 
 
   for (int i = 0; i < timeSteps; i++) {
-    int iteration = 0;
+//    int iteration = 0;
+//
+//    for (auto it = std::begin(threads); it != std::end(threads) - 1; ++it) {
+//      *it = std::thread(updateBody, iteration, iteration + grainSize);
+//      iteration += grainSize;
+//    }
+//    threads.back() = std::thread(updateBody, iteration, N);
+//
+//    for (auto &&i: threads) {
+//      i.join();
+//    }
 
-    for (auto it = std::begin(threads); it != std::end(threads) - 1; ++it) {
-      *it = std::thread(updateBody, iteration, iteration + grainSize);
-      iteration += grainSize;
-    }
-    threads.back() = std::thread(updateBody, iteration, N);
-
-    for (auto &&i: threads) {
-      i.join();
-    }
+    updateBody(0,N);
 
     if (i % plotEveryKthStep == 0) {
       int i1 = i / plotEveryKthStep + 1;
