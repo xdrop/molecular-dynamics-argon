@@ -10,7 +10,7 @@
 #include <vector>
 #include <thread>
 
-const int N = 2;
+const int N = 5000;
 double pos[N][7];
 
 #define MOD(a, b) ((((a)%(b))+(b))%(b))
@@ -18,16 +18,16 @@ double pos[N][7];
 
 double v[N][3];
 
-const double a = 0.01;
+const double a = 0.001;
 
 const double s = a;
 const double cutoff = 10 * s;
 const double rSqrd = cutoff * cutoff;
 
 
-const double skinDiameter = cutoff + 0.1 * cutoff;
+const double skinDiameter = 0.066667;
 const double cellSize = skinDiameter;
-const int M = 10;
+const int M = 15;
 
 double maximumDisplacementPerParticle[N][3];
 double maximumDistanceDisplaced[2];
@@ -38,7 +38,9 @@ int cells[M][M][M];
 int neighbourCells[M][M][M][27][3];
 int next[N];
 
-const double timeStepSize = 0.0001;
+void resetVertletDisplacement();
+
+const double timeStepSize = 0.01;
 
 inline double periodicBoundaryDelta(int i, int j, int dim) {
 
@@ -62,30 +64,30 @@ float rand_FloatRange(float a, float b) {
 }
 
 void setUp() {
-  pos[0][0] = 0.98;
+  pos[0][0] = 0.48;
   pos[0][1] = 0.5;
   pos[0][2] = 0.5;
 
-  pos[1][0] = 0.02;
+  pos[1][0] = 0.52;
   pos[1][1] = 0.5;
   pos[1][2] = 0.5;
 
-  pos[2][0] = 0.5;
-  pos[2][1] = 0.98;
-  pos[2][2] = 0.5;
-
-  pos[3][0] = 0.5;
-  pos[3][1] = 0.02;
-  pos[3][2] = 0.5;
-
-  pos[4][0] = 0.02;
-  pos[4][1] = 0.02;
-  pos[4][2] = 0.5;
-
-
-  pos[5][0] = 0.98;
-  pos[5][1] = 0.98;
-  pos[5][2] = 0.5;
+//  pos[2][0] = 0.5;
+//  pos[2][1] = 0.98;
+//  pos[2][2] = 0.5;
+//
+//  pos[3][0] = 0.5;
+//  pos[3][1] = 0.02;
+//  pos[3][2] = 0.5;
+//
+//  pos[4][0] = 0.02;
+//  pos[4][1] = 0.02;
+//  pos[4][2] = 0.5;
+//
+//
+//  pos[5][0] = 0.98;
+//  pos[5][1] = 0.98;
+//  pos[5][2] = 0.5;
 
 
 
@@ -110,9 +112,9 @@ void randSetup() {
     pos[i][0] = randUnit();
     pos[i][1] = randUnit();
     pos[i][2] = randUnit();
-    v[i][0] = 0;
-    v[i][1] = 0;
-    v[i][2] = 0;
+    v[i][0] = rand_FloatRange(0, s/10);
+    v[i][1] = rand_FloatRange(0, s/10);
+    v[i][2] = rand_FloatRange(0, s/10);
   }
 
 }
@@ -205,12 +207,16 @@ void writeNeighbourCells() {
 
 void updateBody(int begin, int end) {
 
-  for (int i = begin; i < end; i++) {
-    double force[3];
+  double forces[N][3];
 
-    force[0] = 0.0;
-    force[1] = 0.0;
-    force[2] = 0.0;
+  for (int i = 0; i < N; i++) {
+    forces[i][0] = 0.0;
+    forces[i][1] = 0.0;
+    forces[i][2] = 0.0;
+
+  }
+
+  for (int i = begin; i < end; i++) {
 
     // for every neighbour j in the vertlet list
     for (auto &j : vertletList[i]) {
@@ -230,9 +236,18 @@ void updateBody(int begin, int end) {
 
         double potential = force_potential(distance);
 
-        force[0] += dx * potential;
-        force[1] += dy * potential;
-        force[2] += dz * potential;
+        double fDx = dx * potential;
+        double fDy = dy * potential;
+        double fDz = dy * potential;
+
+        forces[i][0] += fDx;
+        forces[i][1] += fDy;
+        forces[i][2] += fDz;
+
+        forces[j][0] -= fDx;
+        forces[j][1] -= fDy;
+        forces[j][2] -= fDz;
+
       }
     }
 
@@ -276,13 +291,13 @@ void updateBody(int begin, int end) {
     assert(pos[i][0] > 0.0);
 
 
-    pos[i][3] = force[0];
+    pos[i][3] = forces[i][0];
     pos[i][6] = fabs(v[i][0]) + fabs(v[i][1]) + fabs(v[i][2]);
 
 
-    v[i][0] += timeStepSize * force[0];
-    v[i][1] += timeStepSize * force[1];
-    v[i][2] += timeStepSize * force[2];
+    v[i][0] += timeStepSize * forces[i][0];
+    v[i][1] += timeStepSize * forces[i][1];
+    v[i][2] += timeStepSize * forces[i][2];
 
 
   }
@@ -342,7 +357,7 @@ void updateVertletLists() {
             // while the neighbour cell contains more particles
             while (j != EMPTY) {
 
-              if (i != j) {
+              if (i < j) {
                 // j is a neighbour of i
                 neighbours.push_back(j);
               }
@@ -378,16 +393,12 @@ randSetup();
   cell_update();
   updateVertletLists();
 
-  for (int i = 0; i < N; i++) {
-    maximumDisplacementPerParticle[i][0] = 0.0;
-    maximumDisplacementPerParticle[i][1] = 0.0;
-    maximumDisplacementPerParticle[i][2] = 0.0;
-  }
+  resetVertletDisplacement();
 
   int vertletSaved = 0;
 
-  const int timeSteps = 20000000;
-  const int plotEveryKthStep = 10000;
+  const int timeSteps = 2000000;
+  const int plotEveryKthStep = 1000;
 
 
   // create a few threads to parallelize the simulation
@@ -401,26 +412,24 @@ randSetup();
     if (shouldUpdateNeighbourList()) {
       cell_update();
       updateVertletLists();
-      for (int i = 0; i < N; i++) {
-        maximumDisplacementPerParticle[i][0] = 0.0;
-        maximumDisplacementPerParticle[i][1] = 0.0;
-        maximumDisplacementPerParticle[i][2] = 0.0;
-      }
+      resetVertletDisplacement();
     } else {
       vertletSaved++;
     }
 
     int iteration = 0;
 
-    for(auto it = std::begin(threads); it != std::end(threads) - 1; ++it){
-      *it = std::thread(updateBody, iteration, iteration + grainSize);
-      iteration += grainSize;
-    }
-    threads.back() = std::thread(updateBody, iteration, N);
+//    for(auto it = std::begin(threads); it != std::end(threads) - 1; ++it){
+//      *it = std::thread(updateBody, iteration, iteration + grainSize);
+//      iteration += grainSize;
+//    }
+//    threads.back() = std::thread(updateBody, iteration, N);
+//
+//    for(auto&& i: threads){
+//      i.join();
+//    }
 
-    for(auto&& i: threads){
-      i.join();
-    }
+    updateBody(0,N);
 
     if (i % plotEveryKthStep == 0) {
       int i1 = i / plotEveryKthStep + 1;
@@ -435,6 +444,17 @@ randSetup();
   std::cout << "Vertlet saved: " << vertletSaved << " timesteps" << std::endl;
 
   return 0;
+}
+
+void resetVertletDisplacement() {
+  for (int i = 0; i < N; i++) {
+    maximumDisplacementPerParticle[i][0] = 0.0;
+    maximumDisplacementPerParticle[i][1] = 0.0;
+    maximumDisplacementPerParticle[i][2] = 0.0;
+  }
+
+  maximumDistanceDisplaced[0] = 0.0;
+  maximumDistanceDisplaced[1] = 0.0;
 }
 
 

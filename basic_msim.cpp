@@ -12,25 +12,24 @@
 const int N = 2;
 double pos[N][7];
 
-#define EMPTY -1
+#define VARIABLE_TIME_STEP false
 
 double v[N][3];
 
+#if VARIABLE_TIME_STEP
 const double a = 0.00001;
+#else
+const double a = 0.1;
+#endif
 
 const double s = a;
 
-double timeStepSize;
+double timeStepSize = 0.0001;
 
-inline double periodicBoundaryDelta(int i, int j, int dim) {
+bool lock = false;
 
-  double dt = pos[j][dim] - pos[i][dim];
-
-  if (dt > 0.5) dt = dt - 1.0;
-  if (dt <= -0.5) dt = dt + 1.0;
-
-  return -dt;
-
+inline double delta(double x1, double x2) {
+  return x1 - x2;
 }
 
 inline const double calcDistance(double dx, double dy, double dz);
@@ -55,56 +54,35 @@ float rand_FloatRange(float a, float b) {
 }
 
 void setUp() {
-  pos[0][0] = 0.4;
+  pos[0][0] = 0.25;
   pos[0][1] = 0.5;
   pos[0][2] = 0.5;
 
-  pos[1][0] = 0.6;
+  pos[1][0] = 0.75;
   pos[1][1] = 0.5;
   pos[1][2] = 0.5;
 
-//  pos[2][0] = 0.5;
-//  pos[2][1] = 0.98;
-//  pos[2][2] = 0.5;
-//
-//  pos[3][0] = 0.5;
-//  pos[3][1] = 0.02;
-//  pos[3][2] = 0.5;
-//
-//  pos[4][0] = 0.02;
-//  pos[4][1] = 0.02;
-//  pos[4][2] = 0.5;
-//
-//
-//  pos[5][0] = 0.98;
-//  pos[5][1] = 0.98;
-//  pos[5][2] = 0.5;
-
-
-  v[0][0] = 0.0000005;
+  v[0][0] = 0.0;
   v[0][1] = 0.0;
   v[0][2] = 0.0;
 
-  v[1][0] = -0.0000005;
+  v[1][0] = 0.0;
   v[1][1] = 0.0;
   v[1][2] = 0.0;
 
 
 }
 
-double randUnit() {
-  return rand_FloatRange(0.0, 1.0);
-}
 
 void randSetup() {
 
   for (int i = 0; i < N; i++) {
-    pos[i][0] = randUnit();
-    pos[i][1] = randUnit();
-    pos[i][2] = randUnit();
-    v[i][0] = 0;
-    v[i][1] = 0;
-    v[i][2] = 0;
+    pos[i][0] = rand_FloatRange(0.0, 1.0);
+    pos[i][1] = rand_FloatRange(0.0, 1.0);
+    pos[i][2] = rand_FloatRange(0.0, 1.0);
+    v[i][0] = rand_FloatRange(0.0, 0.000001);
+    v[i][1] = rand_FloatRange(0.0, 0.000001);
+    v[i][2] = rand_FloatRange(0.0, 0.000001);
   }
 
 }
@@ -114,7 +92,7 @@ void printCSVFile(int counter) {
   filename << "result-" << counter << ".csv";
   std::ofstream out(filename.str().c_str());
 
-  out << "x, y, z, force, dist, wrap, vel" << std::endl;
+  out << "x, y, z, force, dist, timestep, vel" << std::endl;
 
   for (int i = 0; i < N; i++) {
     out << pos[i][0]
@@ -136,79 +114,128 @@ void printCSVFile(int counter) {
 
 double wrap(double pos) {
   double wrapped = fmod(pos, 1.0);
-  double d = wrapped > 0.0 ? wrapped : wrapped + 1;
-  if(!(d < 1.0))
+  double d = wrapped > 0.0 || wrapped == 0 ? wrapped : wrapped + 1;
+  if (!(d < 1.0) || !(d > 0.0))
     std::cout << "break";
   return d;
 }
 
 void updateBody(int begin, int end) {
 
-  double minDistance = 100.0;
+  double forces[N][3];
+
+  for (int i = 0; i < N; i++) {
+    forces[i][0] = 0.0;
+    forces[i][1] = 0.0;
+    forces[i][2] = 0.0;
+
+  }
+
+  double minDistance = 10000;
+#if VARIABLE_TIME_STEP
+  double maxForce = 0;
+#endif
 
   for (int i = begin; i < end; i++) {
-    double force[3];
 
-    force[0] = 0.0;
-    force[1] = 0.0;
-    force[2] = 0.0;
+    for (int j = i + 1; j < N; j++) {
 
-    // for every neighbour j in the vertlet list
-    for (int j = 0; j < N; j++) {
 
-      if(i==j) continue;
+      for (int cX = -1; cX < 2; cX++) {
+        for (int cY = -1; cY < 2; cY++) {
+          for (int cZ = -1; cZ < 2; cZ++) {
 
-      // calculate difference (with periodic boundary) in x,y,z
-      double dx = periodicBoundaryDelta(i, j, 0);
-      double dy = periodicBoundaryDelta(i, j, 1);
-      double dz = periodicBoundaryDelta(i, j, 2);
 
-      const double distance = sqrt(dx * dx + dy * dy + dz * dz);
+            double nX = pos[j][0] + cX;
+            double nY = pos[j][1] + cY;
+            double nZ = pos[j][2] + cZ;
 
-      if (distance < minDistance)
-        minDistance = distance;
 
-      pos[i][4] = distance;
+            // calculate difference (with periodic boundary) in x,y,z
+            double dx = delta(pos[i][0], nX);
+            double dy = delta(pos[i][1], nY);
+            double dz = delta(pos[i][2], nZ);
 
-      double potential = force_potential(distance);
+            const double distance = sqrt(dx * dx + dy * dy + dz * dz);
 
-      force[0] += dx * potential;
-      force[1] += dy * potential;
-      force[2] += dz * potential;
+            pos[i][4] = minDistance;
+
+            double potential = force_potential(distance);
+
+            double fDx = dx * potential;
+            double fDy = dy * potential;
+            double fDz = dz * potential;
+
+            #if VARIABLE_TIME_STEP
+            if (distance < minDistance)
+              minDistance = distance;
+
+            if(maxForce < fabs(fDx))
+              maxForce = fabs(fDx);
+            if(maxForce < fabs(fDy))
+              maxForce = fabs(fDy);
+            if(maxForce < fabs(fDz))
+              maxForce = fabs(fDz);
+
+            #endif
+
+            // compute the forces on i
+            forces[i][0] += fDx;
+            forces[i][1] += fDy;
+            forces[i][2] += fDz;
+
+            // compute the forces on j
+            forces[j][0] -= fDx;
+            forces[j][1] -= fDy;
+            forces[j][2] -= fDz;
+
+
+          }
+        }
+      }
+
+
     }
 
-    if (minDistance < 0.0002) {
-      timeStepSize = (1E6 * (minDistance/0.0002)) * 0.0000001;
-    }
-    else {
-      timeStepSize = 1.0E2;
-    }
 
+
+
+
+    assert(pos[i][0] >= 0.0);
+    assert(pos[i][0] < 1.0);
+
+    // perform the actual movement of the particles while taking into account the
+    // wrap around force
     double displacement[3];
     displacement[0] = timeStepSize * v[i][0];
     displacement[1] = timeStepSize * v[i][1];
     displacement[2] = timeStepSize * v[i][2];
 
-    assert(pos[i][0] > 0.0);
-    assert(pos[i][0] < 1.0);
+#if VARIABLE_TIME_STEP
 
-    // perform the actual movement of the particles while taking into account the
-    // wrap around force
+    if(minDistance < 0.00003){
+      timeStepSize = 0.0001;
+    } else if(minDistance + displacement[0] ){
+
+    }
+#endif
+
     pos[i][0] = wrap(pos[i][0] + displacement[0]);
     pos[i][1] = wrap(pos[i][1] + displacement[1]);
     pos[i][2] = wrap(pos[i][2] + displacement[2]);
 
-    assert(pos[i][0] > 0.0);
+    assert(pos[i][0] >= 0.0);
     assert(pos[i][0] < 1.0);
 
 
-    pos[i][3] = force[0];
+    pos[i][3] = forces[i][0];
+    pos[i][5] = timeStepSize;
     pos[i][6] = fabs(v[i][0]) + fabs(v[i][1]) + fabs(v[i][2]);
 
 
-    v[i][0] += timeStepSize * force[0];
-    v[i][1] += timeStepSize * force[1];
-    v[i][2] += timeStepSize * force[2];
+    v[i][0] += timeStepSize * forces[i][0];
+    v[i][1] += timeStepSize * forces[i][1];
+    v[i][2] += timeStepSize * forces[i][2];
 
 
   }
@@ -224,12 +251,12 @@ int main() {
   setUp();
   printCSVFile(0);
 
-  const int timeSteps = 16000;
-  const int plotEveryKthStep = 8;
+  const int timeSteps = 2000000;
+  const int plotEveryKthStep = 1000;
 
 
   // create a few threads to parallelize the simulation
-  int noOfThreads = 2;
+  int noOfThreads = 1;
   std::vector<std::thread> threads(noOfThreads);
   // the "piece" of work that each thread should do
   int grainSize = N / noOfThreads;
@@ -248,7 +275,11 @@ int main() {
 //      i.join();
 //    }
 
-    updateBody(0,N);
+
+    if(i == 4097){
+      std::cout << "";
+    }
+    updateBody(0, N);
 
     if (i % plotEveryKthStep == 0) {
       int i1 = i / plotEveryKthStep + 1;
